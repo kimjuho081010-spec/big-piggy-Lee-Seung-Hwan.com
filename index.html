@@ -175,7 +175,7 @@
     <div class="subtitle">오늘 받은 스트레스를 전기공학 관점으로 냉정하게 진단합니다</div>
 
     <div id="loginSection" class="auth-section">
-      <p>전기 계측기를 가동하려면 학교 구글 계정으로 로그인하십시오.</p>
+      <p>전기 계측기를 가동하려면 구글 계정으로 로그인하십시오.</p>
       <button class="google-btn" id="loginBtn">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google__G__Logo.svg" width="18" alt="G">
         구글 계정으로 측정 시작
@@ -233,7 +233,7 @@
   </div>
 
   <script>
-    // 🚨 회원님의 실제 Firebase 프로젝트 설정값 100% 매칭 완료!
+    // 내 Firebase 설정 값
     const firebaseConfig = {
       apiKey: "AIzaSyAJINxHKNmsXaS8Pm7lGAb4rHAuSxpdaxY",
       authDomain: "big-piggy.firebaseapp.com",
@@ -250,10 +250,9 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // 선생님 원본 스크립트 서버 주소 연동
+    // 선생님 서버 주소 연동
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzvCeCidpIBm3Ez_AbmzTRrvzCkPa_7x-irAazDPzljPmuqjjHZOqXxfyS1vNh7tX1/exec';
 
-    // UI 요소
     const loginSection = document.getElementById('loginSection');
     const mainSection = document.getElementById('mainSection');
     const loginBtn = document.getElementById('loginBtn');
@@ -275,7 +274,7 @@
 
     let currentUser = null;
 
-    // Firebase Auth 구글 로그인 제어
+    // 로그인 이벤트
     loginBtn.addEventListener('click', () => {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider).catch(err => {
@@ -301,7 +300,7 @@
       }
     });
 
-    // 핵심 측정 기능 실행
+    // 핵심 측정 제어
     makeBtn.addEventListener('click', makeSpeech);
     clearBtn.addEventListener('click', clearPage);
 
@@ -321,10 +320,10 @@
         resultBox.classList.add('hidden');
         statusBox.textContent = '뇌 내 저항 계측 및 전기공학적 필터링 분석 중...';
 
-        // 전기과 병맛 감성 가상 보고서 텍스트 미리 빌드 (선생님 서버 키 에러 방어용)
+        // 서버 오류 방어용 가상 텍스트 보고서 생성
         const generatedDiagnosis = `[위험도 진단]: 정신 전력 허용 전류 초과 (감전 레벨 4)\n[상태 분석]: 입력된 사건("${text}")으로 인해 전두엽의 내부 저항(R)이 급증하였으며, 과전류로 인해 멘탈 회로망에 일시적인 쇼트(합선)가 감지되었습니다.\n[처방전]: 즉시 시스템 전원을 오프하고 교내 매점에서 220V급 고당도 초코우유를 섭취하여 잔류 정전기를 방전시키십시오.`;
 
-        // 쌤 서버로 전송
+        // 쌤 구글 앱스 스크립트로 전송
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify({
@@ -338,16 +337,16 @@
 
         const data = await response.json();
         
-        // 쌤 OpenAI 키 에러 대처 로직
+        // 쌤 OpenAI API Key 에러 예외 처리 (오류창 띄우지 않고 자연스럽게 텍스트 출력)
         if (data.error && data.error.includes("api_key")) {
-          console.warn("쌤 서버의 OpenAI 키가 정지되어 예외 방어 모드로 진단서를 출력합니다.");
+          console.warn("쌤 서버 Key 만료 상태로 임시 가상 보고서를 출력합니다.");
           aiDiagnosisText.textContent = generatedDiagnosis;
           resultBox.classList.remove('hidden');
           statusBox.textContent = `⚡ 계측 완료 (안내: 쌤 서버 API Key 만료 상태로 텍스트 보고서 전용 출력)`;
         } else if (data.error) {
           throw new Error(data.error);
         } else {
-          // 성공했을 때 화면 처리
+          // 통신 성공 시
           aiDiagnosisText.textContent = data.aiText || generatedDiagnosis;
           const audioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
           audioPlayer.src = audioUrl;
@@ -357,12 +356,12 @@
           statusBox.textContent = '⚡ 종합 오디오 보고서 추출 성공';
         }
 
-        // 데이터베이스에 실시간으로 측정 데이터 전송 및 누적 (수행평가 킬러 항목)
+        // 파이어베이스 데이터베이스(Firestore)에 데이터 강제 저장
         await db.collection("overload_logs").add({
           email: currentUser.email,
           name: currentUser.displayName,
           reason: text,
-          diagnosis: generatedDiagnosis.split('\n')[0],
+          diagnosis: "[감전 위험] 멘탈 회로 일시적 합선 상태 감지",
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
@@ -377,7 +376,7 @@
       }
     }
 
-    // Firestore 데이터베이스에서 최근 감지 로그 5개 긁어오기
+    // 데이터 가져와서 실시간 로그창에 띄우기
     function loadLogs() {
       db.collection("overload_logs").orderBy("timestamp", "desc").limit(5).get().then((querySnapshot) => {
         logContainer.innerHTML = "";
@@ -396,7 +395,7 @@
           logContainer.appendChild(item);
         });
       }).catch(err => {
-        logContainer.innerHTML = "데이터 연동 진행 중... (Firestore 규칙이 테스트 모드인지 확인하세요)";
+        logContainer.innerHTML = "데이터 연동 진행 중... (Firestore 규칙 설정을 확인하세요)";
       });
     }
 
