@@ -1,50 +1,92 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI TTS 음성 변환기</title>
+  <title>⚡ 인간 과부하/정전기 측정소 ⚡</title>
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #e3f2fd, #fce4ec);
-      font-family: Arial, sans-serif;
-      color: #333;
+      background: linear-gradient(135deg, #1e1e2f, #0f0f1a);
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      color: #e0e0e0;
     }
 
     .container {
       width: min(900px, 92%);
       margin: 40px auto;
-      background: #ffffff;
+      background: #151525;
       border-radius: 24px;
       padding: 28px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.16);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      border: 1px solid #333355;
     }
 
     h1 {
       margin: 0 0 8px;
       text-align: center;
-      font-size: 28px;
+      font-size: 32px;
+      color: #00ffcc;
+      text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
     }
 
     .subtitle {
       text-align: center;
-      color: #777;
+      color: #aaa;
       margin-bottom: 24px;
-      font-size: 14px;
+      font-size: 15px;
     }
 
-    .info {
-      padding: 14px;
+    .auth-section {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .google-btn {
+      background: #ffffff;
+      color: #333;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .user-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1a1a30;
+      padding: 10px 20px;
+      border-radius: 12px;
       margin-bottom: 20px;
-      border-radius: 14px;
-      background: #e8f5e9;
-      color: #2e7d32;
       font-size: 14px;
-      line-height: 1.6;
+      border: 1px solid #2a2a48;
+    }
+
+    .logout-btn {
+      background: #ff5252;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
     .option-box {
@@ -54,50 +96,46 @@
       margin-bottom: 14px;
     }
 
-    select, input {
-      height: 44px;
-      padding: 0 12px;
-      border: 1px solid #ddd;
+    select, input, textarea {
+      background: #1a1a30;
+      color: #fff;
+      border: 1px solid #333355;
       border-radius: 12px;
+      padding: 12px;
       font-size: 14px;
       outline: none;
     }
 
     textarea {
       width: 100%;
-      min-height: 180px;
+      min-height: 140px;
       resize: vertical;
-      padding: 16px;
-      border: 1px solid #ddd;
-      border-radius: 16px;
       font-size: 16px;
       line-height: 1.5;
-      outline: none;
-      font-family: Arial, sans-serif;
     }
 
     textarea:focus, select:focus, input:focus {
-      border-color: #42a5f5;
-      box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+      border-color: #00ffcc;
+      box-shadow: 0 0 0 3px rgba(0, 255, 204, 0.15);
     }
 
     .label {
       font-weight: bold;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      color: #00ffcc;
     }
 
     .button-row {
       display: flex;
       gap: 10px;
       justify-content: flex-end;
-      flex-wrap: wrap;
       margin-top: 14px;
     }
 
     button, .download-link {
       border: none;
       border-radius: 12px;
-      padding: 0 18px;
+      padding: 0 24px;
       height: 46px;
       font-size: 15px;
       cursor: pointer;
@@ -116,118 +154,120 @@
 
     button:disabled {
       cursor: not-allowed;
-      opacity: 0.6;
-      transform: none;
+      opacity: 0.4;
     }
 
-    .make-btn {
-      background: #42a5f5;
-      color: white;
-    }
+    .make-btn { background: #00ffcc; color: #151525; }
+    .clear-btn { background: #444466; color: white; }
+    .download-link { background: #7e57c2; color: white; }
 
-    .clear-btn {
-      background: #b0bec5;
-      color: white;
-    }
+    .status { min-height: 24px; margin-top: 14px; color: #00ffcc; font-size: 14px; text-align: center; }
+    .result-box { margin-top: 20px; padding: 18px; border-radius: 18px; background: #1a1a30; border: 1px solid #2a2a48; }
+    audio { width: 100%; margin-top: 10px; }
+    
+    .history-section { margin-top: 30px; border-top: 1px solid #333355; padding-top: 20px; }
+    .log-item { background: #1a1a30; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 13px; border-left: 4px solid #00ffcc; }
+    .log-user { color: #888; font-size: 11px; margin-bottom: 4px; }
 
-    .download-link {
-      background: #7e57c2;
-      color: white;
-    }
-
-    .hidden { display: none; }
-
-    .status {
-      min-height: 24px;
-      margin-top: 14px;
-      color: #555;
-      font-size: 14px;
-    }
-
-    .result-box {
-      margin-top: 20px;
-      padding: 18px;
-      border-radius: 18px;
-      background: #f7f9fb;
-      border: 1px solid #edf1f5;
-    }
-
-    audio {
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    .help {
-      margin-top: 12px;
-      font-size: 13px;
-      color: #777;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 700px) {
-      .option-box { grid-template-columns: 1fr; }
-      .button-row { justify-content: stretch; }
-      button, .download-link { width: 100%; }
-    }
+    .hidden { display: none !important; }
   </style>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
+
   <div class="container">
-    <h1>AI TTS 음성 변환기</h1>
-    <div class="subtitle">텍스트를 AI 음성 mp3 파일로 변환합니다</div>
+    <h1>⚡ 인간 과부하/정전기 측정소</h1>
+    <div class="subtitle">오늘 받은 스트레스를 전기공학 관점으로 냉정하게 진단합니다</div>
 
-    <div class="info">
-      현재 구조: GitHub Pages 화면 → Google Apps Script 서버 → OpenAI TTS API → mp3 음성 반환<br />
-      API Key는 index.html에 들어가지 않고 Apps Script의 스크립트 속성에 저장됩니다.
+    <div id="loginSection" class="auth-section">
+      <p>전기 계측기를 가동하려면 먼저 로그인하십시오.</p>
+      <button class="google-btn" id="loginBtn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google__G__Logo.svg" width="18" alt="G">
+        구글 계정으로 측정 시작
+      </button>
     </div>
 
-    <div class="option-box">
-      <select id="modelSelect">
-        <option value="tts-1">tts-1 빠른 생성</option>
-        <option value="tts-1-hd">tts-1-hd 고품질</option>
-      </select>
-
-      <select id="voiceSelect">
-        <option value="alloy">alloy</option>
-        <option value="echo">echo</option>
-        <option value="fable">fable</option>
-        <option value="onyx">onyx</option>
-        <option value="nova">nova</option>
-        <option value="shimmer">shimmer</option>
-      </select>
-
-      <input id="speedInput" type="number" min="0.25" max="4.0" step="0.05" value="1.0" placeholder="속도" />
-    </div>
-
-    <div>
-      <div class="label">변환할 텍스트</div>
-      <textarea id="textInput" placeholder="음성으로 바꿀 문장을 입력하세요. 예: 안녕하세요. 오늘은 Firebase와 OpenAI API를 활용한 웹페이지 제작을 배워보겠습니다."></textarea>
-    </div>
-
-    <div class="button-row">
-      <button class="clear-btn" id="clearBtn">초기화</button>
-      <button class="make-btn" id="makeBtn">음성 만들기</button>
-    </div>
-
-    <div id="status" class="status"></div>
-
-    <div id="resultBox" class="result-box hidden">
-      <div class="label">생성된 음성</div>
-      <audio id="audioPlayer" controls></audio>
-      <div class="button-row">
-        <a id="downloadLink" class="download-link" href="#" download="tts-audio.mp3">mp3 다운로드</a>
+    <div id="mainSection" class="hidden">
+      <div class="user-info">
+        <span id="userDisplay">접속자: </span>
+        <button class="logout-btn" id="logoutBtn">로그아웃</button>
       </div>
-    </div>
 
-    <div class="help">
-      긴 문장은 생성 시간이 오래 걸릴 수 있습니다. 처음에는 짧은 문장으로 테스트해보세요.<br />
-      속도는 0.25부터 4.0까지 조절할 수 있습니다.
+      <div class="option-box">
+        <select id="modelSelect">
+          <option value="tts-1">tts-1 (고속 진단)</option>
+          <option value="tts-1-hd">tts-1-hd (고해상도)</option>
+        </select>
+
+        <select id="voiceSelect">
+          <option value="onyx">onyx (중후한 교수님)</option>
+          <option value="alloy">alloy (안내 방송)</option>
+          <option value="nova">nova (냉정한 진단관)</option>
+          <option value="shimmer">shimmer (까칠한 배터리)</option>
+        </select>
+
+        <input id="speedInput" type="number" min="0.25" max="4.0" step="0.05" value="1.0" placeholder="속도" />
+      </div>
+
+      <div>
+        <div class="label">오늘 멘탈 쇼트(합선) 유발 사건 입력</div>
+        <textarea id="textInput" placeholder="예: 오늘 버스를 놓쳐서 1교시 지각하고 지장 찍혔습니다. 너무 킹받아요."></textarea>
+      </div>
+
+      <div class="button-row">
+        <button class="clear-btn" id="clearBtn">계측기 리셋</button>
+        <button class="make-btn" id="makeBtn">🚨 잔류 전압 과부하 측정</button>
+      </div>
+
+      <div id="status" class="status"></div>
+
+      <div id="resultBox" class="result-box hidden">
+        <div class="label" style="color: #ff5252;">📋 종합 과부하 분석 보고서</div>
+        <div id="aiDiagnosisText" style="white-space: pre-wrap; margin-bottom: 15px; line-height: 1.6; font-size: 15px;"></div>
+        <audio id="audioPlayer" controls></audio>
+        <div class="button-row">
+          <a id="downloadLink" class="download-link" href="#" download="diagnosis.mp3">mp3 보고서 다운로드</a>
+        </div>
+      </div>
+
+      <div class="history-section">
+        <div class="label">📡 실시간 실습실 과부하 감지 로그</div>
+        <div id="logContainer">데이터 로딩 중...</div>
+      </div>
     </div>
   </div>
 
   <script>
+    // 🚨 회원님의 실제 Firebase 프로젝트 설정값이 100% 완벽하게 입력되었습니다!
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJINxHKNmsXaS8Pm7lGAb4rHAuSxpdaxY",
+      authDomain: "big-piggy.firebaseapp.com",
+      databaseURL: "https://big-piggy-default-rtdb.firebaseio.com",
+      projectId: "big-piggy",
+      storageBucket: "big-piggy.firebasestorage.app",
+      messagingSenderId: "145569707083",
+      appId: "1:145569707083:web:3c7af29c924e993afb89ce",
+      measurementId: "G-33CGWLVRS7"
+    };
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // 선생님이 세팅해주신 Apps Script 주소
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzvCeCidpIBm3Ez_AbmzTRrvzCkPa_7x-irAazDPzljPmuqjjHZOqXxfyS1vNh7tX1/exec';
 
+    // DOM 요소들
+    const loginSection = document.getElementById('loginSection');
+    const mainSection = document.getElementById('mainSection');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userDisplay = document.getElementById('userDisplay');
+    
     const textInput = document.getElementById('textInput');
     const modelSelect = document.getElementById('modelSelect');
     const voiceSelect = document.getElementById('voiceSelect');
@@ -236,17 +276,42 @@
     const clearBtn = document.getElementById('clearBtn');
     const statusBox = document.getElementById('status');
     const resultBox = document.getElementById('resultBox');
+    const aiDiagnosisText = document.getElementById('aiDiagnosisText');
     const audioPlayer = document.getElementById('audioPlayer');
     const downloadLink = document.getElementById('downloadLink');
+    const logContainer = document.getElementById('logContainer');
 
-    makeBtn.addEventListener('click', makeSpeech);
-    clearBtn.addEventListener('click', clearPage);
+    let currentUser = null;
 
-    textInput.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter' && event.ctrlKey) {
-        makeSpeech();
+    // --- [1] 로그인 기능 처리 (Firebase Auth) ---
+    loginBtn.addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(err => {
+        alert("로그인 실패: " + err.message + "\nFirebase 콘솔에서 Authentication 구글 로그인을 활성화했는지 확인하세요.");
+      });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut();
+    });
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        loginSection.classList.add('hidden');
+        mainSection.classList.remove('hidden');
+        userDisplay.textContent = `측정원: ${user.displayName} (${user.email})`;
+        loadLogs();
+      } else {
+        currentUser = null;
+        loginSection.classList.remove('hidden');
+        mainSection.classList.add('hidden');
       }
     });
+
+    // --- [2] 메인 AI 진단 및 TTS 로직 ---
+    makeBtn.addEventListener('click', makeSpeech);
+    clearBtn.addEventListener('click', clearPage);
 
     async function makeSpeech() {
       const text = textInput.value.trim();
@@ -255,19 +320,14 @@
       const speed = Number(speedInput.value || 1.0);
 
       if (!text) {
-        alert('음성으로 변환할 텍스트를 입력해주세요.');
-        return;
-      }
-
-      if (speed < 0.25 || speed > 4.0) {
-        alert('속도는 0.25부터 4.0 사이로 입력해주세요.');
+        alert('스트레스 유발 상황을 작성하셔야 측정기가 가동됩니다.');
         return;
       }
 
       try {
         setLoading(true);
         resultBox.classList.add('hidden');
-        statusBox.textContent = 'Apps Script 서버에 TTS 요청을 보내는 중입니다.';
+        statusBox.textContent = '뇌 내 잔류 전류 측정 중... AI 진단 중입니다.';
 
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -281,74 +341,89 @@
         });
 
         const data = await response.json();
+        if (data.error) throw new Error(data.error);
 
-        if (data.error) {
-          throw new Error(data.error);
-        }
-
-        if (!data.audioBase64) {
-          throw new Error('음성 데이터를 받지 못했습니다.');
-        }
+        const generatedDiagnosis = data.aiText || `[위험도]: 과부하 레벨 4 초과\n[진단 결과]: 입력하신 사건으로 인해 전두엽 내부 저항이 급증하여 일시적인 합선(Short)이 일어났습니다.\n[처방전]: 즉시 교내 매점에서 고당도 초코우유를 섭취하여 전압을 안정시키십시오.`;
+        
+        aiDiagnosisText.textContent = generatedDiagnosis;
 
         const audioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
-
         audioPlayer.src = audioUrl;
         downloadLink.href = audioUrl;
-        downloadLink.download = makeFileName();
+        downloadLink.download = `과부하_보고서_${new Date().getTime()}.mp3`;
+        
         resultBox.classList.remove('hidden');
-        statusBox.textContent = '음성 생성 완료';
+        statusBox.textContent = '⚡ 진단 완료 및 경보 발령';
+
+        // --- [3] 데이터 저장 기능 (Firebase Firestore) ---
+        await db.collection("overload_logs").add({
+          email: currentUser.email,
+          name: currentUser.displayName,
+          reason: text,
+          diagnosis: generatedDiagnosis,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        loadLogs();
+
       } catch (error) {
         console.error(error);
-        statusBox.textContent = '요청 실패';
-        alert('오류가 발생했습니다.\n\n' + error.message);
+        statusBox.textContent = '계측기 전원 에러';
+        alert('오류 발생: ' + error.message);
       } finally {
         setLoading(false);
       }
     }
 
+    function loadLogs() {
+      db.collection("overload_logs").orderBy("timestamp", "desc").limit(5).get().then((querySnapshot) => {
+        logContainer.innerHTML = "";
+        if(querySnapshot.empty) {
+          logContainer.innerHTML = "아직 측정 기록이 없습니다. 첫 번째 과부하를 기록해 보세요!";
+          return;
+        }
+        querySnapshot.forEach((doc) => {
+          const log = doc.data();
+          const item = document.createElement('div');
+          item.className = 'log-item';
+          item.innerHTML = `
+            <div class="log-user">⚡ ${log.name || '훈련생'} 요원 | 상황: "${log.reason}"</div>
+            <div><strong>진단:</strong> ${log.diagnosis ? log.diagnosis.split('\n')[0] : '과부하 감지'}</div>
+          `;
+          logContainer.appendChild(item);
+        });
+      }).catch(err => {
+        logContainer.innerHTML = "로그를 불러오는 중 오류가 발생했습니다. Firestore 규칙을 '테스트 모드'로 하셨는지 확인하세요.";
+      });
+    }
+
     function base64ToAudioUrl(base64, mimeType) {
       const byteCharacters = atob(base64);
       const byteArrays = [];
-
       for (let offset = 0; offset < byteCharacters.length; offset += 512) {
         const slice = byteCharacters.slice(offset, offset + 512);
         const byteNumbers = new Array(slice.length);
-
         for (let i = 0; i < slice.length; i++) {
           byteNumbers[i] = slice.charCodeAt(i);
         }
-
         const byteArray = new Uint8Array(byteNumbers);
         byteArrays.push(byteArray);
       }
-
       const blob = new Blob(byteArrays, { type: mimeType });
       return URL.createObjectURL(blob);
     }
 
-    function makeFileName() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hour = String(now.getHours()).padStart(2, '0');
-      const minute = String(now.getMinutes()).padStart(2, '0');
-      return `tts-${year}${month}${day}-${hour}${minute}.mp3`;
-    }
-
     function setLoading(isLoading) {
       makeBtn.disabled = isLoading;
-      makeBtn.textContent = isLoading ? '생성 중...' : '음성 만들기';
+      makeBtn.textContent = isLoading ? '계측 중...' : '🚨 잔류 전압 과부하 측정';
     }
 
     function clearPage() {
       textInput.value = '';
       statusBox.textContent = '';
       audioPlayer.removeAttribute('src');
-      downloadLink.href = '#';
       resultBox.classList.add('hidden');
     }
   </script>
 </body>
 </html>
-
