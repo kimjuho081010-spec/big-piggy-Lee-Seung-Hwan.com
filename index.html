@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>⚡ 실습실 전력 모니터링 및 안전 계통 시스템 ⚡</title>
+  <title>⚡ AI 기반 실습실 전력 제어 및 위험 예측 시스템 ⚡</title>
   <style>
     * { box-sizing: border-box; }
 
@@ -28,7 +28,7 @@
     h1 {
       margin: 0 0 10px;
       text-align: center;
-      font-size: 30px;
+      font-size: 28px;
       color: #58a6ff;
       text-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
     }
@@ -37,7 +37,7 @@
       text-align: center;
       color: #8b949e;
       margin-bottom: 25px;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .auth-section {
@@ -85,15 +85,14 @@
       font-weight: bold;
     }
 
-    /* 대시보드 그리드 구조 */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 1fr 1.2fr;
+      grid-template-columns: 1.1fr 0.9fr;
       gap: 25px;
       margin-bottom: 25px;
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 850px) {
       .dashboard-grid { grid-template-columns: 1fr; }
     }
 
@@ -105,7 +104,7 @@
     }
 
     .panel-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: bold;
       color: #58a6ff;
       margin-bottom: 15px;
@@ -114,7 +113,6 @@
       gap: 8px;
     }
 
-    /* 전력 현황판 메터 */
     .status-display {
       text-align: center;
       padding: 15px;
@@ -125,10 +123,10 @@
     }
 
     .power-value {
-      font-size: 42px;
+      font-size: 38px;
       font-weight: bold;
       color: #39d353;
-      margin: 10px 0;
+      margin: 8px 0;
       font-family: monospace;
     }
 
@@ -137,299 +135,7 @@
       animation: blink 1s infinite;
     }
 
-    @keyframes blink {
-      50% { opacity: 0.5; }
-    }
+    @keyframes blink { 50% { opacity: 0.4; } }
 
-    .input-group {
-      margin-bottom: 15px;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 13px;
-      color: #8b949e;
-      margin-bottom: 6px;
-    }
-
-    select, input {
-      width: 100%;
-      background: #0d1117;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    select:focus, input:focus {
-      border-color: #58a6ff;
-    }
-
-    .btn-block {
-      width: 100%;
-      background: #238636;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-
-    .btn-block:hover { background: #2ea44f; }
-    .btn-block:disabled { background: #21262d; color: #8b949e; cursor: not-allowed; }
-
-    /* 실시간 로그 스타일 */
-    .log-container {
-      max-height: 250px;
-      overflow-y: auto;
-    }
-
-    .log-item {
-      background: #0d1117;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: 13px;
-      border-left: 4px solid #39d353;
-      border-dash: 1px solid #30363d;
-    }
-
-    .log-item.trip {
-      border-left-color: #f85149;
-      background: rgba(248, 81, 73, 0.05);
-    }
-
-    .log-meta {
-      color: #8b949e;
-      font-size: 11px;
-      margin-bottom: 4px;
-    }
-
-    .hidden { display: none !important; }
-  </style>
-
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-</head>
-<body>
-
-  <div class="container">
-    <h1>⚡ 전력 계통 모니터링 및 안전 제어 시스템</h1>
-    <div class="subtitle">교내 전기실습실 안전사고 방지를 위한 고부하 설비 트립 실시간 기록 장치</div>
-
-    <div id="loginSection" class="auth-section">
-      <p style="margin-bottom: 25px; color: #8b949e;">실습실 메인 분전반 제어 권한을 획득하려면 학교 구글 계정으로 인증해 주세요.</p>
-      <button class="google-btn" id="loginBtn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google__G__Logo.svg" width="18" alt="G">
-        구글 계정으로 시스템 기동
-      </button>
-    </div>
-
-    <div id="mainSection" class="hidden">
-      <div class="user-info">
-        <span id="userDisplay" style="font-weight: bold; color: #58a6ff;">책임 관리자: </span>
-        <button class="logout-btn" id="logoutBtn">시스템 종료</button>
-      </div>
-
-      <div class="dashboard-grid">
-        
-        <div class="panel">
-          <div class="panel-title">📊 디지털 전력 계측기 (Power Meter)</div>
-          
-          <div class="status-display">
-            <div style="font-size: 12px; color: #8b949e;">현재 총 합성 전력</div>
-            <div id="totalPowerDisplay" class="power-value">0 kW</div>
-            <div id="breakerStatus" style="font-size: 13px; color: #58a6ff; font-weight: bold;">메인 차단기: 투입 가동중 (NORMAL)</div>
-          </div>
-
-          <div class="input-group">
-            <label for="loadSelect">🔌 가동할 실습 설비 선택 (설계 용량)</label>
-            <select id="loadSelect">
-              <option value="1.5">단상 전기 유도 전동기 실습대 (1.5 kW)</option>
-              <option value="3.5">3상 동기 전동기 구동 모듈 (3.5 kW)</option>
-              <option value="5.0">전기 용접 및 열 가공 장비 (5.0 kW)</option>
-              <option value="2.0">조명 공학 및 전열 실험 회로 (2.0 kW)</option>
-              <option value="8.0">★ 실습실 총 허용 전력 초과 유발 부하 (8.0 kW)</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <label for="demandFactor">📈 가상 변전 계통 수용률 (Demand Factor)</label>
-            <input id="demandFactor" type="number" min="0.1" max="1.0" step="0.05" value="0.8" />
-          </div>
-
-          <button class="btn-block" id="insertLoadBtn">⚡ 부하 스위치 ON (전력 투입)</button>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title">📡 실시간 실습실 전력 데이터 로그 (Cloud Firestore)</div>
-          <div class="log-container" id="logContainer">
-            데이터베이스 연결 대기중...
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // 내 실제 Firebase 설정 값 연동
-    const firebaseConfig = {
-      apiKey: "AIzaSyAJINxHKNmsXaS8Pm7lGAb4rHAuSxpdaxY",
-      authDomain: "big-piggy.firebaseapp.com",
-      databaseURL: "https://big-piggy-default-rtdb.firebaseio.com",
-      projectId: "big-piggy",
-      storageBucket: "big-piggy.firebasestorage.app",
-      messagingSenderId: "145569707083",
-      appId: "1:145569707083:web:3c7af29c924e993afb89ce",
-      measurementId: "G-33CGWLVRS7"
-    };
-
-    // Firebase 초기화
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    // 임계 허용 전력 기준 (설계 한도량)
-    const MAX_ALLOWABLE_POWER = 7.5; // 7.5 kW 초과 시 차단기 트립 발생 시뮬레이션
-
-    // UI 요소 매핑
-    const loginSection = document.getElementById('loginSection');
-    const mainSection = document.getElementById('mainSection');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const userDisplay = document.getElementById('userDisplay');
-    
-    const totalPowerDisplay = document.getElementById('totalPowerDisplay');
-    const breakerStatus = document.getElementById('breakerStatus');
-    const loadSelect = document.getElementById('loadSelect');
-    const demandFactor = document.getElementById('demandFactor');
-    const insertLoadBtn = document.getElementById('insertLoadBtn');
-    const logContainer = document.getElementById('logContainer');
-
-    let currentUser = null;
-    let currentTotalPower = 0;
-
-    // 인증 관련 이벤트 처리
-    loginBtn.addEventListener('click', () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(err => {
-        alert("로그인 에러인증 실패: " + err.message);
-      });
-    });
-
-    logoutBtn.addEventListener('click', () => {
-      auth.signOut();
-    });
-
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        currentUser = user;
-        loginSection.classList.add('hidden');
-        mainSection.classList.remove('hidden');
-        userDisplay.textContent = `책임 관리자: ${user.displayName} (${user.email})`;
-        loadLogs(); // 파이어베이스 기록 불러오기
-      } else {
-        currentUser = null;
-        loginSection.classList.remove('hidden');
-        mainSection.classList.add('hidden');
-      }
-    });
-
-    // 부하 제어 시뮬레이션 및 DB 전송 로직
-    insertLoadBtn.addEventListener('click', async () => {
-      const selectedLoad = Number(loadSelect.value);
-      const factor = Number(demandFactor.value || 0.8);
-      
-      // 실제 계산 수식 반영 (입력 설비 용량 × 수용률)
-      const calculatedPower = Number((selectedLoad * factor).toFixed(2));
-      currentTotalPower = Number((currentTotalPower + calculatedPower).toFixed(2));
-
-      let statusText = "정상 가동 (NORMAL)";
-      let isTrip = false;
-
-      // 안전 임계치 체크 및 계통 보호 동작(트립)
-      if (currentTotalPower > MAX_ALLOWABLE_POWER) {
-        statusText = "🚨 과부하 차단기 트리핑 (TRIP 발생)";
-        isTrip = true;
-        totalPowerDisplay.classList.add('danger');
-        breakerStatus.innerHTML = `<span style="color:#f85149;">${statusText}</span>`;
-        insertLoadBtn.disabled = true;
-        insertLoadBtn.textContent = "🛑 차단기 복귀 필요 (리셋)";
-      } else {
-        totalPowerDisplay.classList.remove('danger');
-        breakerStatus.innerHTML = `<span style="color:#58a6ff;">메인 차단기: 부하 투입 중 (${statusText})</span>`;
-      }
-
-      totalPowerDisplay.textContent = `${currentTotalPower} kW / ${MAX_ALLOWABLE_POWER} kW`;
-
-      // 💥 핵심 수행평가 요건: 파이어베이스 실시간 데이터 저장 (Firestore 전송)
-      try {
-        await db.collection("power_safety_logs").add({
-          adminEmail: currentUser.email,
-          adminName: currentUser.displayName,
-          equipment: loadSelect.options[loadSelect.selectedIndex].text,
-          appliedPower: calculatedPower,
-          totalSystemPower: currentTotalPower,
-          isTrip: isTrip,
-          status: statusText,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // 차단기 떨어졌을 때 3초 후 자동 리셋 구조 (조작 편의성)
-        if (isTrip) {
-          setTimeout(() => {
-            currentTotalPower = 0;
-            totalPowerDisplay.textContent = "0 kW";
-            totalPowerDisplay.classList.remove('danger');
-            breakerStatus.innerHTML = `<span>메인 차단기: 계통 복구 완료 (NORMAL)</span>`;
-            insertLoadBtn.disabled = false;
-            insertLoadBtn.textContent = "⚡ 부하 스위치 ON (전력 투입)";
-          }, 3500);
-        }
-
-        loadLogs(); // 리스트 새로고침
-
-      } catch (error) {
-        console.error("데이터베이스 전송 오류:", error);
-        alert("DB 실시간 기록 실패: " + error.message);
-      }
-    });
-
-    // Firestore에서 실시간 계통 수집 로그 5개 긁어오기
-    function loadLogs() {
-      db.collection("power_safety_logs").orderBy("timestamp", "desc").limit(5).get().then((querySnapshot) => {
-        logContainer.innerHTML = "";
-        
-        if (querySnapshot.empty) {
-          logContainer.innerHTML = "<div style='color:#8b949e;text-align:center;'>현재 감전 및 과부하 차단 안전 기록이 없습니다. 첫 부하를 투입해 보세요!</div>";
-          return;
-        }
-
-        querySnapshot.forEach((doc) => {
-          const log = doc.data();
-          const item = document.createElement('div');
-          item.className = `log-item ${log.isTrip ? 'trip' : ''}`;
-          
-          item.innerHTML = `
-            <div class="log-meta">⚡ 관리자: ${log.adminName} | 투입 장비: ${log.equipment}</div>
-            <div>
-              <strong>합성 부하:</strong> <span style="color:#58a6ff;">${log.totalSystemPower} kW</span> 
-              | <strong>상태:</strong> <span>${log.status}</span>
-            </div>
-          `;
-          logContainer.appendChild(item);
-        });
-      }).catch(err => {
-        logContainer.innerHTML = "<div style='color:#f85149;'>데이터베이스 로딩 오류 (규칙 검토 필요)</div>";
-      });
-    }
-  </script>
-</body>
-</html>
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; font-size: 13px; color: #8
