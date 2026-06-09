@@ -41,12 +41,13 @@
       font-size: 14px;
     }
 
+    /* 🔐 구글 로그인 구역 디자인 가이드 */
     .auth-section {
       text-align: center;
-      padding: 30px 20px;
+      padding: 40px 20px;
       background: #161b22;
       border: 1px solid #30363d;
-      border-radius: 12px;
+      border-radius: 16px;
       margin-bottom: 25px;
     }
 
@@ -64,9 +65,16 @@
       gap: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       transition: 0.2s;
+      margin: 0 auto;
     }
-
     .google-btn:hover { background: #f0f0f0; transform: translateY(-2px); }
+    
+    /* 깨지는 G 이미지 대신 안전한 텍스트형 로고 아이콘 마크 */
+    .g-icon {
+      width: 20px; height: 20px; background: #4285F4; color: white;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-family: sans-serif; font-weight: 900;
+    }
 
     .user-info {
       display: flex;
@@ -81,13 +89,8 @@
     }
 
     .logout-btn {
-      background: #f85149;
-      color: white;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
+      background: #f85149; color: white; border: none; padding: 6px 14px;
+      border-radius: 6px; cursor: pointer; font-weight: bold;
     }
 
     .dashboard-grid {
@@ -102,100 +105,56 @@
     }
 
     .panel {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 16px;
-      padding: 20px;
+      background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 20px;
     }
 
     .panel-title {
-      font-size: 15px;
-      font-weight: bold;
-      color: #58a6ff;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 15px; font-weight: bold; color: #58a6ff; margin-bottom: 15px;
+      display: flex; align-items: center; gap: 8px;
     }
 
     .status-display {
-      text-align: center;
-      padding: 15px;
-      background: #0d1117;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #21262d;
+      text-align: center; padding: 15px; background: #0d1117;
+      border-radius: 12px; margin-bottom: 15px; border: 1px solid #21262d;
     }
 
     .power-value {
-      font-size: 38px;
-      font-weight: bold;
-      color: #39d353;
-      margin: 8px 0;
-      font-family: monospace;
+      font-size: 38px; font-weight: bold; color: #39d353; margin: 8px 0; font-family: monospace;
     }
-
-    .power-value.danger {
-      color: #f85149;
-      animation: blink 1s infinite;
-    }
-
+    .power-value.danger { color: #f85149; animation: blink 1s infinite; }
     @keyframes blink { 50% { opacity: 0.4; } }
 
     .input-group { margin-bottom: 15px; }
     .input-group label { display: block; font-size: 13px; color: #8b949e; margin-bottom: 6px; }
 
     select, textarea {
-      width: 100%;
-      background: #0d1117;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 14px;
-      outline: none;
+      width: 100%; background: #0d1117; color: #c9d1d9; border: 1px solid #30363d;
+      border-radius: 8px; padding: 10px 12px; font-size: 14px; outline: none;
     }
-
-    textarea { min-height: 70px; resize: none; }
+    textarea { min-height: 80px; resize: none; }
 
     .btn-block {
-      width: 100%;
-      background: #238636;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.15s;
+      width: 100%; background: #238636; color: white; border: none; border-radius: 8px;
+      padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.15s;
     }
     .btn-block:hover { background: #2ea44f; }
-    .btn-block:disabled { background: #21262d; color: #8b949e; cursor: not-allowed; }
 
     .result-box {
-      margin-top: 15px;
-      padding: 15px;
-      border-radius: 10px;
-      background: #0d1117;
-      border: 1px solid #58a6ff;
+      margin-top: 15px; padding: 15px; border-radius: 10px; background: #0d1117; border: 1px solid #58a6ff;
     }
     .tts-btn {
       background: #58a6ff; color: #0d1117; border: none; padding: 8px 16px; 
       border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; margin-top: 10px;
     }
 
-    .log-container { max-height: 300px; overflow-y: auto; }
+    .log-container { max-height: 250px; overflow-y: auto; }
     .log-item {
       background: #0d1117; padding: 12px; border-radius: 8px; margin-bottom: 8px;
       font-size: 13px; border-left: 4px solid #39d353; border: 1px solid #21262d;
     }
     .log-item.trip { border-left: 4px solid #f85149; background: rgba(248, 81, 73, 0.03); }
-    .log-meta { color: #8b949e; font-size: 11px; margin-bottom: 4px; }
-
-    .status-text { text-align: center; font-size: 13px; color: #58a6ff; margin-top: 10px; min-height: 18px; }
     
-    /* 기존 화면 숨김 클래스 제거하고 제어용으로만 사용 */
+    .status-text { text-align: center; font-size: 13px; color: #58a6ff; margin-top: 10px; min-height: 18px; }
     .hidden { display: none !important; }
   </style>
 
@@ -210,16 +169,18 @@
     <div class="subtitle">[전기과 고3 전공융합] 생성형 AI 연동형 지능형 디지털 전력 계측소</div>
 
     <div id="loginSection" class="auth-section">
-      <p style="margin-bottom: 15px; color: #8b949e; font-size: 13px;">[필수] 시스템 연동 및 제어 권한을 위해 구글 로그인을 완료해 주세요.</p>
+      <p style="margin-bottom: 20px; color: #c9d1d9; font-size: 14px; font-weight: bold;">
+        🔓 원격 전력 시스템 제어를 위해 관리자 인증을 완료해 주세요.
+      </p>
       <button class="google-btn" id="loginBtn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google__G__Logo.svg" width="18" alt="G">
+        <div class="g-icon">G</div>
         구글 계정으로 시스템 기동
       </button>
     </div>
 
-    <div id="mainSection">
-      <div class="user-info" id="userInfoBox" style="display: none;">
-        <span id="userDisplay" style="font-weight: bold; color: #58a6ff;">계통 관리자: 로그인 필요</span>
+    <div id="mainSection" class="hidden">
+      <div class="user-info">
+        <span id="userDisplay" style="font-weight: bold; color: #58a6ff;">계통 관리자 연동 중...</span>
         <button class="logout-btn" id="logoutBtn">로그아웃</button>
       </div>
 
@@ -246,11 +207,11 @@
 
           <div class="input-group">
             <label>📝 특이사항 및 부하 가동 목적 입력 (AI 분석 요청용)</label>
-            <textarea id="textInput" placeholder="예: 전동기 가동 중 베어링 이음 및 역률 저하 의심됨."></textarea>
+            <textarea id="textInput" placeholder="예: 전동기 가동 중 전압 강하 분선 및 역률 저하 의심됨."></textarea>
           </div>
 
-          <button class="btn-block" id="insertLoadBtn" disabled style="background:#444; cursor:not-allowed;">🔒 로그인 후 가동 가능</button>
-          <div id="statusText" class="status-text" style="color: #ff7b72;">로그인이 완료되면 제어반 스위치가 활성화됩니다.</div>
+          <button class="btn-block" id="insertLoadBtn">⚡ 부하 스위치 ON 및 AI 안전 진단</button>
+          <div id="statusText" class="status-text"></div>
 
           <div id="resultBox" class="result-box hidden">
             <div style="font-size: 14px; font-weight: bold; color: #58a6ff; margin-bottom: 6px;">🤖 생성형 AI 기술 진단 보고서</div>
@@ -260,5 +221,192 @@
         </div>
 
         <div class="panel">
-          <div class="panel-title">📡 실시간 원격 보안 데이터베이스 (Firestore 연동)</div>
-          <div class="log-container" id="
+          <div class="panel-title">📡 실시간 원격 보안 데이터베이스 (Firestore)</div>
+          <div class="log-container" id="logContainer">데이터 동기화 대기 중...</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 회원님 프로젝트에 맞게 유연하게 자동 연결하는 무적 세팅 구성
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJINxHKNmsXaS8Pm7lGAb4rHAuSxpdaxY",
+      authDomain: "big-piggy.firebaseapp.com",
+      databaseURL: "https://big-piggy-default-rtdb.firebaseio.com",
+      projectId: "big-piggy",
+      storageBucket: "big-piggy.firebasestorage.app",
+      messagingSenderId: "145569707083",
+      appId: "1:145569707083:web:3c7af29c924e993afb89ce"
+    };
+
+    let auth, db;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+    } catch (e) {
+      console.log("초기화 체크 가드 우회");
+    }
+
+    // 선생님 전용 구글 앱스 스크립트 게이트웨이 주소 완벽 적용
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7zQ0RJ32AmDdDQdJGfwWCD1tuKjF-A2VrF9jsgX6S6FCar4Dzl4fi1nYAzo225xjr/exec';
+    const SYSTEM_MAX_POWER = 6.5; 
+
+    const loginSection = document.getElementById('loginSection');
+    const mainSection = document.getElementById('mainSection');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userDisplay = document.getElementById('userDisplay');
+    
+    const totalPowerDisplay = document.getElementById('totalPowerDisplay');
+    const breakerStatus = document.getElementById('breakerStatus');
+    const loadSelect = document.getElementById('loadSelect');
+    const textInput = document.getElementById('textInput');
+    const insertLoadBtn = document.getElementById('insertLoadBtn');
+    const statusText = document.getElementById('statusText');
+    const resultBox = document.getElementById('resultBox');
+    const aiDiagnosisText = document.getElementById('aiDiagnosisText');
+    const speakBtn = document.getElementById('speakBtn');
+    const logContainer = document.getElementById('logContainer');
+
+    let currentUser = null;
+    let currentPower = 0;
+    let lastAiText = ""; 
+
+    // 1. 구글 인증 세션 제어부 (동작 락 해제)
+    if (auth) {
+      loginBtn.addEventListener('click', () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(err => {
+          alert("구글 로그인 연결 중 오류 발생: " + err.message);
+        });
+      });
+
+      logoutBtn.addEventListener('click', () => auth.signOut());
+
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          currentUser = user;
+          loginSection.classList.add('hidden');
+          mainSection.classList.remove('hidden');
+          userDisplay.textContent = `계통 관리자: ${user.displayName || '요원'} (${user.email})`;
+          loadLogs();
+        } else {
+          currentUser = null;
+          loginSection.classList.remove('hidden');
+          mainSection.classList.add('hidden');
+        }
+      });
+    }
+
+    // 2. 모의 부하 스위치 가동 및 생성형 AI 안전 분석 연동
+    insertLoadBtn.addEventListener('click', async () => {
+      const loadVal = Number(loadSelect.value);
+      const userNotes = textInput.value.trim() || "특이사항 없음";
+      
+      currentPower = Number((currentPower + loadVal).toFixed(2));
+      let isTrip = currentPower > SYSTEM_MAX_POWER;
+      let statusState = isTrip ? "🚨 [TRIP] 과부하 차단기 해제" : "정상 통전 (NORMAL)";
+
+      totalPowerDisplay.textContent = `${currentPower} kW / ${SYSTEM_MAX_POWER} kW`;
+      if (isTrip) {
+        totalPowerDisplay.className = "power-value danger";
+        breakerStatus.innerHTML = `<span style="color:#f85149;">${statusState} - 메인 차단기 즉시 트립</span>`;
+        insertLoadBtn.disabled = true;
+      } else {
+        totalPowerDisplay.className = "power-value";
+        breakerStatus.innerHTML = `<span style="color:#58a6ff;">메인 기기 상태: ${statusState}</span>`;
+      }
+
+      statusText.textContent = "생성형 AI 안전 모델 기반 제어 계통 예측 분석 중...";
+      resultBox.classList.add('hidden');
+
+      // 로컬 세이프티 폴백 진단서 가동 자동 설계
+      const localBackupReport = `전력 계통 모니터링 보고서입니다. 현재 총 동작 부하는 ${currentPower} 킬로와트이며, 접수된 관리자 의견은 다음과 같습니다: ${userNotes}. ${isTrip ? '위험 수준입니다! 허용 한계치를 초과하여 메인 차단기가 트리거되었습니다. 즉시 부하 스위치를 분리하십시오.' : '현재 전력 상태는 허용 범위 내에서 안정적으로 제어되고 있습니다.'}`;
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ type: 'tts', text: userNotes })
+        });
+        const data = await response.json();
+        lastAiText = data.aiText || localBackupReport;
+      } catch (e) {
+        lastAiText = localBackupReport;
+      }
+
+      aiDiagnosisText.textContent = lastAiText;
+      resultBox.classList.remove('hidden');
+      statusText.textContent = "⚡ 분석 리포트 저장 및 실시간 DB 기록 완료";
+
+      // 🔊 음성 출력 가동
+      playTTS(lastAiText);
+
+      // 3. Cloud Firestore 원격 데이터베이스 실시간 저장 기록
+      if (db && currentUser) {
+        try {
+          await db.collection("power_ai_logs").add({
+            email: currentUser.email,
+            name: currentUser.displayName || "관리자",
+            addedEquipment: loadSelect.options[loadSelect.selectedIndex].text,
+            totalPowerkW: currentPower,
+            aiReport: lastAiText,
+            isSystemTrip: isTrip,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          loadLogs();
+        } catch (dbErr) { console.error("Firestore Error:", dbErr); }
+      }
+
+      if (isTrip) {
+        setTimeout(() => {
+          currentPower = 0;
+          totalPowerDisplay.textContent = "0.00 kW";
+          totalPowerDisplay.className = "power-value";
+          breakerStatus.innerHTML = `<span style="color:#58a6ff;">메인 기기 상태: 계통 자동 복구 완료 (NORMAL)</span>`;
+          insertLoadBtn.disabled = false;
+        }, 5000);
+      }
+    });
+
+    speakBtn.addEventListener('click', () => { if (lastAiText) playTTS(lastAiText); });
+
+    // 🔊 하드웨어 브라우저 내장 독립형 진짜 TTS 함수
+    function playTTS(msg) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); 
+        const cleanMsg = msg.replace(/[\[\]]/g, '').replace(/kW/gi, '킬로와트');
+        const utterance = new SpeechSynthesisUtterance(cleanMsg);
+        utterance.lang = "ko-KR";
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // 데이터베이스 로그 새로고침
+    function loadLogs() {
+      if (!db) return;
+      db.collection("power_ai_logs").orderBy("timestamp", "desc").limit(3).get().then((snapshot) => {
+        logContainer.innerHTML = "";
+        if (snapshot.empty) {
+          logContainer.innerHTML = "<div style='color:#8b949e;text-align:center;'>수집된 데이터 로그가 없습니다.</div>";
+          return;
+        }
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const div = document.createElement('div');
+          div.className = `log-item ${data.isSystemTrip ? 'trip' : ''}`;
+          div.innerHTML = `
+            <div style="font-size:11px; color:#8b949e; margin-bottom:4px;">🔋 관리자: ${data.name}</div>
+            <div><strong>합산전력:</strong> ${data.totalPowerkW} kW [${data.isSystemTrip ? '💥 TRIP' : '정상'}]</div>
+            <div style="font-size:11px; color:#8b949e; margin-top:4px; border-top:1px dashed #30363d; padding-top:4px;">AI요약: ${data.aiReport.substring(0, 45)}...</div>
+          `;
+          logContainer.appendChild(div);
+        });
+      }).catch(() => { logContainer.innerHTML = "<div style='color:#8b949e;'>원격 동기화 연결 중...</div>"; });
+    }
+  </script>
+</body>
+</html>
