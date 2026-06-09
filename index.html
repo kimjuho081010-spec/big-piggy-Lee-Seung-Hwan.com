@@ -3,163 +3,212 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>⚡ 인간 과부하/정전기 측정소 ⚡</title>
+  <title>⚡ 실습실 전력 모니터링 및 안전 계통 시스템 ⚡</title>
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #1e1e2f, #0f0f1a);
+      background: linear-gradient(135deg, #0d1117, #161b22);
       font-family: 'Segoe UI', Roboto, sans-serif;
-      color: #e0e0e0;
+      color: #c9d1d9;
     }
 
     .container {
-      width: min(900px, 92%);
-      margin: 40px auto;
-      background: #151525;
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-      border: 1px solid #333355;
+      width: min(950px, 94%);
+      margin: 30px auto;
+      background: #1f242c;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid #30363d;
     }
 
     h1 {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       text-align: center;
-      font-size: 32px;
-      color: #00ffcc;
-      text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+      font-size: 30px;
+      color: #58a6ff;
+      text-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
     }
 
     .subtitle {
       text-align: center;
-      color: #aaa;
-      margin-bottom: 24px;
+      color: #8b949e;
+      margin-bottom: 25px;
       font-size: 15px;
     }
 
     .auth-section {
       text-align: center;
-      padding: 40px 20px;
+      padding: 50px 20px;
     }
 
     .google-btn {
       background: #ffffff;
-      color: #333;
+      color: #21262d;
       border: none;
-      padding: 12px 24px;
+      padding: 14px 28px;
       border-radius: 12px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: 0.2s;
     }
+
+    .google-btn:hover { background: #f0f0f0; transform: translateY(-2px); }
 
     .user-info {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #1a1a30;
-      padding: 10px 20px;
+      background: #161b22;
+      padding: 12px 20px;
       border-radius: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       font-size: 14px;
-      border: 1px solid #2a2a48;
+      border: 1px solid #30363d;
     }
 
     .logout-btn {
-      background: #ff5252;
+      background: #f85149;
       color: white;
       border: none;
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 6px;
       cursor: pointer;
+      font-weight: bold;
     }
 
-    .option-box {
+    /* 대시보드 그리드 구조 */
+    .dashboard-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 14px;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 25px;
+      margin-bottom: 25px;
     }
 
-    select, input, textarea {
-      background: #1a1a30;
-      color: #fff;
-      border: 1px solid #333355;
+    @media (max-width: 800px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #58a6ff;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 전력 현황판 메터 */
+    .status-display {
+      text-align: center;
+      padding: 15px;
+      background: #0d1117;
       border-radius: 12px;
-      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #21262d;
+    }
+
+    .power-value {
+      font-size: 42px;
+      font-weight: bold;
+      color: #39d353;
+      margin: 10px 0;
+      font-family: monospace;
+    }
+
+    .power-value.danger {
+      color: #f85149;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.5; }
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      color: #8b949e;
+      margin-bottom: 6px;
+    }
+
+    select, input {
+      width: 100%;
+      background: #0d1117;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 12px;
       font-size: 14px;
       outline: none;
     }
 
-    textarea {
+    select:focus, input:focus {
+      border-color: #58a6ff;
+    }
+
+    .btn-block {
       width: 100%;
-      min-height: 140px;
-      resize: vertical;
-      font-size: 16px;
-      line-height: 1.5;
-    }
-
-    textarea:focus, select:focus, input:focus {
-      border-color: #00ffcc;
-      box-shadow: 0 0 0 3px rgba(0, 255, 204, 0.15);
-    }
-
-    .label {
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: #00ffcc;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 14px;
-    }
-
-    button, .download-link {
+      background: #238636;
+      color: white;
       border: none;
-      border-radius: 12px;
-      padding: 0 24px;
-      height: 46px;
+      border-radius: 8px;
+      padding: 12px;
       font-size: 15px;
+      font-weight: bold;
       cursor: pointer;
       transition: 0.15s;
-      font-weight: bold;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    button:hover, .download-link:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
+    .btn-block:hover { background: #2ea44f; }
+    .btn-block:disabled { background: #21262d; color: #8b949e; cursor: not-allowed; }
+
+    /* 실시간 로그 스타일 */
+    .log-container {
+      max-height: 250px;
+      overflow-y: auto;
     }
 
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.4;
+    .log-item {
+      background: #0d1117;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      border-left: 4px solid #39d353;
+      border-dash: 1px solid #30363d;
     }
 
-    .make-btn { background: #00ffcc; color: #151525; }
-    .clear-btn { background: #444466; color: white; }
-    .download-link { background: #7e57c2; color: white; }
+    .log-item.trip {
+      border-left-color: #f85149;
+      background: rgba(248, 81, 73, 0.05);
+    }
 
-    .status { min-height: 24px; margin-top: 14px; color: #00ffcc; font-size: 14px; text-align: center; }
-    .result-box { margin-top: 20px; padding: 18px; border-radius: 18px; background: #1a1a30; border: 1px solid #2a2a48; }
-    audio { width: 100%; margin-top: 10px; }
-    
-    .history-section { margin-top: 30px; border-top: 1px solid #333355; padding-top: 20px; }
-    .log-item { background: #1a1a30; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 13px; border-left: 4px solid #00ffcc; }
-    .log-user { color: #888; font-size: 11px; margin-bottom: 4px; }
+    .log-meta {
+      color: #8b949e;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
 
     .hidden { display: none !important; }
   </style>
@@ -171,69 +220,66 @@
 <body>
 
   <div class="container">
-    <h1>⚡ 인간 과부하/정전기 측정소</h1>
-    <div class="subtitle">오늘 받은 스트레스를 전기공학 관점으로 냉정하게 진단합니다</div>
+    <h1>⚡ 전력 계통 모니터링 및 안전 제어 시스템</h1>
+    <div class="subtitle">교내 전기실습실 안전사고 방지를 위한 고부하 설비 트립 실시간 기록 장치</div>
 
     <div id="loginSection" class="auth-section">
-      <p>전기 계측기를 가동하려면 구글 계정으로 로그인하십시오.</p>
+      <p style="margin-bottom: 25px; color: #8b949e;">실습실 메인 분전반 제어 권한을 획득하려면 학교 구글 계정으로 인증해 주세요.</p>
       <button class="google-btn" id="loginBtn">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google__G__Logo.svg" width="18" alt="G">
-        구글 계정으로 측정 시작
+        구글 계정으로 시스템 기동
       </button>
     </div>
 
     <div id="mainSection" class="hidden">
       <div class="user-info">
-        <span id="userDisplay">접속자: </span>
-        <button class="logout-btn" id="logoutBtn">로그아웃</button>
+        <span id="userDisplay" style="font-weight: bold; color: #58a6ff;">책임 관리자: </span>
+        <button class="logout-btn" id="logoutBtn">시스템 종료</button>
       </div>
 
-      <div class="option-box">
-        <select id="modelSelect">
-          <option value="tts-1">tts-1 (고속 진단)</option>
-          <option value="tts-1-hd">tts-1-hd (고해상도)</option>
-        </select>
+      <div class="dashboard-grid">
+        
+        <div class="panel">
+          <div class="panel-title">📊 디지털 전력 계측기 (Power Meter)</div>
+          
+          <div class="status-display">
+            <div style="font-size: 12px; color: #8b949e;">현재 총 합성 전력</div>
+            <div id="totalPowerDisplay" class="power-value">0 kW</div>
+            <div id="breakerStatus" style="font-size: 13px; color: #58a6ff; font-weight: bold;">메인 차단기: 투입 가동중 (NORMAL)</div>
+          </div>
 
-        <select id="voiceSelect">
-          <option value="nova">nova (냉정한 진단관)</option>
-          <option value="onyx">onyx (중후한 교수님)</option>
-          <option value="alloy">alloy (안내 방송)</option>
-          <option value="shimmer">shimmer (까칠한 배터리)</option>
-        </select>
+          <div class="input-group">
+            <label for="loadSelect">🔌 가동할 실습 설비 선택 (설계 용량)</label>
+            <select id="loadSelect">
+              <option value="1.5">단상 전기 유도 전동기 실습대 (1.5 kW)</option>
+              <option value="3.5">3상 동기 전동기 구동 모듈 (3.5 kW)</option>
+              <option value="5.0">전기 용접 및 열 가공 장비 (5.0 kW)</option>
+              <option value="2.0">조명 공학 및 전열 실험 회로 (2.0 kW)</option>
+              <option value="8.0">★ 실습실 총 허용 전력 초과 유발 부하 (8.0 kW)</option>
+            </select>
+          </div>
 
-        <input id="speedInput" type="number" min="0.25" max="4.0" step="0.05" value="1.0" placeholder="속도" />
-      </div>
+          <div class="input-group">
+            <label for="demandFactor">📈 가상 변전 계통 수용률 (Demand Factor)</label>
+            <input id="demandFactor" type="number" min="0.1" max="1.0" step="0.05" value="0.8" />
+          </div>
 
-      <div>
-        <div class="label">오늘 멘탈 쇼트(합선) 유발 사건 입력</div>
-        <textarea id="textInput" placeholder="예: 오늘 이승환이 밥을 너무 많이 먹어서 화나요."></textarea>
-      </div>
-
-      <div class="button-row">
-        <button class="clear-btn" id="clearBtn">계측기 리셋</button>
-        <button class="make-btn" id="makeBtn">🚨 잔류 전압 과부하 측정</button>
-      </div>
-
-      <div id="status" class="status"></div>
-
-      <div id="resultBox" class="result-box hidden">
-        <div class="label" style="color: #ff5252;">📋 종합 과부하 분석 보고서</div>
-        <div id="aiDiagnosisText" style="white-space: pre-wrap; margin-bottom: 15px; line-height: 1.6; font-size: 15px;"></div>
-        <audio id="audioPlayer" controls></audio>
-        <div class="button-row">
-          <a id="downloadLink" class="download-link" href="#" download="diagnosis.mp3">mp3 보고서 다운로드</a>
+          <button class="btn-block" id="insertLoadBtn">⚡ 부하 스위치 ON (전력 투입)</button>
         </div>
-      </div>
 
-      <div class="history-section">
-        <div class="label">📡 실시간 실습실 과부하 감지 로그 (Firestore 연동)</div>
-        <div id="logContainer">데이터 로딩 중...</div>
+        <div class="panel">
+          <div class="panel-title">📡 실시간 실습실 전력 데이터 로그 (Cloud Firestore)</div>
+          <div class="log-container" id="logContainer">
+            데이터베이스 연결 대기중...
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
   <script>
-    // 내 Firebase 설정 값
+    // 내 실제 Firebase 설정 값 연동
     const firebaseConfig = {
       apiKey: "AIzaSyAJINxHKNmsXaS8Pm7lGAb4rHAuSxpdaxY",
       authDomain: "big-piggy.firebaseapp.com",
@@ -250,35 +296,31 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // 선생님 서버 주소 연동
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzvCeCidpIBm3Ez_AbmzTRrvzCkPa_7x-irAazDPzljPmuqjjHZOqXxfyS1vNh7tX1/exec';
+    // 임계 허용 전력 기준 (설계 한도량)
+    const MAX_ALLOWABLE_POWER = 7.5; // 7.5 kW 초과 시 차단기 트립 발생 시뮬레이션
 
+    // UI 요소 매핑
     const loginSection = document.getElementById('loginSection');
     const mainSection = document.getElementById('mainSection');
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const userDisplay = document.getElementById('userDisplay');
     
-    const textInput = document.getElementById('textInput');
-    const modelSelect = document.getElementById('modelSelect');
-    const voiceSelect = document.getElementById('voiceSelect');
-    const speedInput = document.getElementById('speedInput');
-    const makeBtn = document.getElementById('makeBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const statusBox = document.getElementById('status');
-    const resultBox = document.getElementById('resultBox');
-    const aiDiagnosisText = document.getElementById('aiDiagnosisText');
-    const audioPlayer = document.getElementById('audioPlayer');
-    const downloadLink = document.getElementById('downloadLink');
+    const totalPowerDisplay = document.getElementById('totalPowerDisplay');
+    const breakerStatus = document.getElementById('breakerStatus');
+    const loadSelect = document.getElementById('loadSelect');
+    const demandFactor = document.getElementById('demandFactor');
+    const insertLoadBtn = document.getElementById('insertLoadBtn');
     const logContainer = document.getElementById('logContainer');
 
     let currentUser = null;
+    let currentTotalPower = 0;
 
-    // 로그인 이벤트
+    // 인증 관련 이벤트 처리
     loginBtn.addEventListener('click', () => {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider).catch(err => {
-        alert("로그인 에러: " + err.message);
+        alert("로그인 에러인증 실패: " + err.message);
       });
     });
 
@@ -291,8 +333,8 @@
         currentUser = user;
         loginSection.classList.add('hidden');
         mainSection.classList.remove('hidden');
-        userDisplay.textContent = `측정요원: ${user.displayName} (${user.email})`;
-        loadLogs();
+        userDisplay.textContent = `책임 관리자: ${user.displayName} (${user.email})`;
+        loadLogs(); // 파이어베이스 기록 불러오기
       } else {
         currentUser = null;
         loginSection.classList.remove('hidden');
@@ -300,131 +342,93 @@
       }
     });
 
-    // 핵심 측정 제어
-    makeBtn.addEventListener('click', makeSpeech);
-    clearBtn.addEventListener('click', clearPage);
+    // 부하 제어 시뮬레이션 및 DB 전송 로직
+    insertLoadBtn.addEventListener('click', async () => {
+      const selectedLoad = Number(loadSelect.value);
+      const factor = Number(demandFactor.value || 0.8);
+      
+      // 실제 계산 수식 반영 (입력 설비 용량 × 수용률)
+      const calculatedPower = Number((selectedLoad * factor).toFixed(2));
+      currentTotalPower = Number((currentTotalPower + calculatedPower).toFixed(2));
 
-    async function makeSpeech() {
-      const text = textInput.value.trim();
-      const model = modelSelect.value;
-      const voice = voiceSelect.value;
-      const speed = Number(speedInput.value || 1.0);
+      let statusText = "정상 가동 (NORMAL)";
+      let isTrip = false;
 
-      if (!text) {
-        alert('스트레스 현상을 입력창에 서술해야 계측기가 작동합니다.');
-        return;
+      // 안전 임계치 체크 및 계통 보호 동작(트립)
+      if (currentTotalPower > MAX_ALLOWABLE_POWER) {
+        statusText = "🚨 과부하 차단기 트리핑 (TRIP 발생)";
+        isTrip = true;
+        totalPowerDisplay.classList.add('danger');
+        breakerStatus.innerHTML = `<span style="color:#f85149;">${statusText}</span>`;
+        insertLoadBtn.disabled = true;
+        insertLoadBtn.textContent = "🛑 차단기 복귀 필요 (리셋)";
+      } else {
+        totalPowerDisplay.classList.remove('danger');
+        breakerStatus.innerHTML = `<span style="color:#58a6ff;">메인 차단기: 부하 투입 중 (${statusText})</span>`;
       }
 
+      totalPowerDisplay.textContent = `${currentTotalPower} kW / ${MAX_ALLOWABLE_POWER} kW`;
+
+      // 💥 핵심 수행평가 요건: 파이어베이스 실시간 데이터 저장 (Firestore 전송)
       try {
-        setLoading(true);
-        resultBox.classList.add('hidden');
-        statusBox.textContent = '뇌 내 저항 계측 및 전기공학적 필터링 분석 중...';
-
-        // 서버 오류 방어용 가상 텍스트 보고서 생성
-        const generatedDiagnosis = `[위험도 진단]: 정신 전력 허용 전류 초과 (감전 레벨 4)\n[상태 분석]: 입력된 사건("${text}")으로 인해 전두엽의 내부 저항(R)이 급증하였으며, 과전류로 인해 멘탈 회로망에 일시적인 쇼트(합선)가 감지되었습니다.\n[처방전]: 즉시 시스템 전원을 오프하고 교내 매점에서 220V급 고당도 초코우유를 섭취하여 잔류 정전기를 방전시키십시오.`;
-
-        // 쌤 구글 앱스 스크립트로 전송
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            type: 'tts',
-            text: text,
-            model: model,
-            voice: voice,
-            speed: speed
-          })
-        });
-
-        const data = await response.json();
-        
-        // 쌤 OpenAI API Key 에러 예외 처리 (오류창 띄우지 않고 자연스럽게 텍스트 출력)
-        if (data.error && data.error.includes("api_key")) {
-          console.warn("쌤 서버 Key 만료 상태로 임시 가상 보고서를 출력합니다.");
-          aiDiagnosisText.textContent = generatedDiagnosis;
-          resultBox.classList.remove('hidden');
-          statusBox.textContent = `⚡ 계측 완료 (안내: 쌤 서버 API Key 만료 상태로 텍스트 보고서 전용 출력)`;
-        } else if (data.error) {
-          throw new Error(data.error);
-        } else {
-          // 통신 성공 시
-          aiDiagnosisText.textContent = data.aiText || generatedDiagnosis;
-          const audioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
-          audioPlayer.src = audioUrl;
-          downloadLink.href = audioUrl;
-          downloadLink.download = `과부하_보고서_${new Date().getTime()}.mp3`;
-          resultBox.classList.remove('hidden');
-          statusBox.textContent = '⚡ 종합 오디오 보고서 추출 성공';
-        }
-
-        // 파이어베이스 데이터베이스(Firestore)에 데이터 강제 저장
-        await db.collection("overload_logs").add({
-          email: currentUser.email,
-          name: currentUser.displayName,
-          reason: text,
-          diagnosis: "[감전 위험] 멘탈 회로 일시적 합선 상태 감지",
+        await db.collection("power_safety_logs").add({
+          adminEmail: currentUser.email,
+          adminName: currentUser.displayName,
+          equipment: loadSelect.options[loadSelect.selectedIndex].text,
+          appliedPower: calculatedPower,
+          totalSystemPower: currentTotalPower,
+          isTrip: isTrip,
+          status: statusText,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        loadLogs();
+        // 차단기 떨어졌을 때 3초 후 자동 리셋 구조 (조작 편의성)
+        if (isTrip) {
+          setTimeout(() => {
+            currentTotalPower = 0;
+            totalPowerDisplay.textContent = "0 kW";
+            totalPowerDisplay.classList.remove('danger');
+            breakerStatus.innerHTML = `<span>메인 차단기: 계통 복구 완료 (NORMAL)</span>`;
+            insertLoadBtn.disabled = false;
+            insertLoadBtn.textContent = "⚡ 부하 스위치 ON (전력 투입)";
+          }, 3500);
+        }
+
+        loadLogs(); // 리스트 새로고침
 
       } catch (error) {
-        console.error(error);
-        statusBox.textContent = '시스템 전원 과부하 에러';
-        alert('서버 응답 오류가 발생했습니다: ' + error.message);
-      } finally {
-        setLoading(false);
+        console.error("데이터베이스 전송 오류:", error);
+        alert("DB 실시간 기록 실패: " + error.message);
       }
-    }
+    });
 
-    // 데이터 가져와서 실시간 로그창에 띄우기
+    // Firestore에서 실시간 계통 수집 로그 5개 긁어오기
     function loadLogs() {
-      db.collection("overload_logs").orderBy("timestamp", "desc").limit(5).get().then((querySnapshot) => {
+      db.collection("power_safety_logs").orderBy("timestamp", "desc").limit(5).get().then((querySnapshot) => {
         logContainer.innerHTML = "";
-        if(querySnapshot.empty) {
-          logContainer.innerHTML = "아직 전교생의 멘탈 쇼트 기록이 없습니다. 첫 로그를 찍어보세요!";
+        
+        if (querySnapshot.empty) {
+          logContainer.innerHTML = "<div style='color:#8b949e;text-align:center;'>현재 감전 및 과부하 차단 안전 기록이 없습니다. 첫 부하를 투입해 보세요!</div>";
           return;
         }
+
         querySnapshot.forEach((doc) => {
           const log = doc.data();
           const item = document.createElement('div');
-          item.className = 'log-item';
+          item.className = `log-item ${log.isTrip ? 'trip' : ''}`;
+          
           item.innerHTML = `
-            <div class="log-user">⚡ 요원: ${log.name || '훈련생'} | 유발 상황: "${log.reason}"</div>
-            <div><strong>계측 결과:</strong> ${log.diagnosis || '과부하 상태 감지'}</div>
+            <div class="log-meta">⚡ 관리자: ${log.adminName} | 투입 장비: ${log.equipment}</div>
+            <div>
+              <strong>합성 부하:</strong> <span style="color:#58a6ff;">${log.totalSystemPower} kW</span> 
+              | <strong>상태:</strong> <span>${log.status}</span>
+            </div>
           `;
           logContainer.appendChild(item);
         });
       }).catch(err => {
-        logContainer.innerHTML = "데이터 연동 진행 중... (Firestore 규칙 설정을 확인하세요)";
+        logContainer.innerHTML = "<div style='color:#f85149;'>데이터베이스 로딩 오류 (규칙 검토 필요)</div>";
       });
-    }
-
-    function base64ToAudioUrl(base64, mimeType) {
-      const byteCharacters = atob(base64);
-      const byteArrays = [];
-      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-        const slice = byteCharacters.slice(offset, offset + 512);
-        const byteNumbers = new Array(slice.length);
-        for (let i = 0; i < slice.length; i++) {
-          byteNumbers[i] = slice.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        byteArrays.push(byteArray);
-      }
-      const blob = new Blob(byteArrays, { type: mimeType });
-      return URL.createObjectURL(blob);
-    }
-
-    function setLoading(isLoading) {
-      makeBtn.disabled = isLoading;
-      makeBtn.textContent = isLoading ? '계측 및 연동 중...' : '🚨 잔류 전압 과부하 측정';
-    }
-
-    function clearPage() {
-      textInput.value = '';
-      statusBox.textContent = '';
-      audioPlayer.removeAttribute('src');
-      resultBox.classList.add('hidden');
     }
   </script>
 </body>
