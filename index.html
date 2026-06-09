@@ -13,11 +13,12 @@
       background: linear-gradient(135deg, #0d1117, #161b22);
       font-family: 'Segoe UI', Roboto, sans-serif;
       color: #c9d1d9;
+      padding: 20px;
     }
 
     .container {
       width: min(950px, 94%);
-      margin: 30px auto;
+      margin: 20px auto;
       background: #1f242c;
       border-radius: 20px;
       padding: 30px;
@@ -42,7 +43,11 @@
 
     .auth-section {
       text-align: center;
-      padding: 50px 20px;
+      padding: 30px 20px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      margin-bottom: 25px;
     }
 
     .google-btn {
@@ -98,4 +103,162 @@
 
     .panel {
       background: #161b22;
-      border: 1px solid
+      border: 1px solid #30363d;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #58a6ff;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-display {
+      text-align: center;
+      padding: 15px;
+      background: #0d1117;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #21262d;
+    }
+
+    .power-value {
+      font-size: 38px;
+      font-weight: bold;
+      color: #39d353;
+      margin: 8px 0;
+      font-family: monospace;
+    }
+
+    .power-value.danger {
+      color: #f85149;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0.4; } }
+
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; font-size: 13px; color: #8b949e; margin-bottom: 6px; }
+
+    select, textarea {
+      width: 100%;
+      background: #0d1117;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    textarea { min-height: 70px; resize: none; }
+
+    .btn-block {
+      width: 100%;
+      background: #238636;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .btn-block:hover { background: #2ea44f; }
+    .btn-block:disabled { background: #21262d; color: #8b949e; cursor: not-allowed; }
+
+    .result-box {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #0d1117;
+      border: 1px solid #58a6ff;
+    }
+    .tts-btn {
+      background: #58a6ff; color: #0d1117; border: none; padding: 8px 16px; 
+      border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; margin-top: 10px;
+    }
+
+    .log-container { max-height: 300px; overflow-y: auto; }
+    .log-item {
+      background: #0d1117; padding: 12px; border-radius: 8px; margin-bottom: 8px;
+      font-size: 13px; border-left: 4px solid #39d353; border: 1px solid #21262d;
+    }
+    .log-item.trip { border-left: 4px solid #f85149; background: rgba(248, 81, 73, 0.03); }
+    .log-meta { color: #8b949e; font-size: 11px; margin-bottom: 4px; }
+
+    .status-text { text-align: center; font-size: 13px; color: #58a6ff; margin-top: 10px; min-height: 18px; }
+    
+    /* 기존 화면 숨김 클래스 제거하고 제어용으로만 사용 */
+    .hidden { display: none !important; }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <h1>⚡ AI 기반 실습실 전력 제어 및 위험 예측 시스템</h1>
+    <div class="subtitle">[전기과 고3 전공융합] 생성형 AI 연동형 지능형 디지털 전력 계측소</div>
+
+    <div id="loginSection" class="auth-section">
+      <p style="margin-bottom: 15px; color: #8b949e; font-size: 13px;">[필수] 시스템 연동 및 제어 권한을 위해 구글 로그인을 완료해 주세요.</p>
+      <button class="google-btn" id="loginBtn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google__G__Logo.svg" width="18" alt="G">
+        구글 계정으로 시스템 기동
+      </button>
+    </div>
+
+    <div id="mainSection">
+      <div class="user-info" id="userInfoBox" style="display: none;">
+        <span id="userDisplay" style="font-weight: bold; color: #58a6ff;">계통 관리자: 로그인 필요</span>
+        <button class="logout-btn" id="logoutBtn">로그아웃</button>
+      </div>
+
+      <div class="dashboard-grid">
+        
+        <div class="panel">
+          <div class="panel-title">⚙️ 실시간 계통 부하 모의 투입기</div>
+          
+          <div class="status-display">
+            <div style="font-size: 12px; color: #8b949e;">현재 종합 연동 부하</div>
+            <div id="totalPowerDisplay" class="power-value">0.00 kW</div>
+            <div id="breakerStatus" style="font-size: 13px; font-weight: bold; color: #58a6ff;">메인 기기 상태: 정상 송전 중 (NORMAL)</div>
+          </div>
+
+          <div class="input-group">
+            <label>🔌 가동할 전력 설비 선택</label>
+            <select id="loadSelect">
+              <option value="1.8">단상 유도전동기 구동 회로 (1.8 kW)</option>
+              <option value="3.2">3상 동기 전동기 동력 제어반 (3.2 kW)</option>
+              <option value="4.5">전기기기 실험용 고부하 저항기 (4.5 kW)</option>
+              <option value="7.5">⚠️ 계통 차단(Trip) 유발용 임계 초과 전열기 (7.5 kW)</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>📝 특이사항 및 부하 가동 목적 입력 (AI 분석 요청용)</label>
+            <textarea id="textInput" placeholder="예: 전동기 가동 중 베어링 이음 및 역률 저하 의심됨."></textarea>
+          </div>
+
+          <button class="btn-block" id="insertLoadBtn" disabled style="background:#444; cursor:not-allowed;">🔒 로그인 후 가동 가능</button>
+          <div id="statusText" class="status-text" style="color: #ff7b72;">로그인이 완료되면 제어반 스위치가 활성화됩니다.</div>
+
+          <div id="resultBox" class="result-box hidden">
+            <div style="font-size: 14px; font-weight: bold; color: #58a6ff; margin-bottom: 6px;">🤖 생성형 AI 기술 진단 보고서</div>
+            <div id="aiDiagnosisText" style="font-size: 13px; white-space: pre-wrap; line-height: 1.5; color: #e6edf3;"></div>
+            <button class="tts-btn" id="speakBtn">🔊 AI 진단 내용 음성 청취 (TTS)</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">📡 실시간 원격 보안 데이터베이스 (Firestore 연동)</div>
+          <div class="log-container" id="
